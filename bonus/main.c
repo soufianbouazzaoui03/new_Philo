@@ -6,7 +6,7 @@
 /*   By: soel-bou <soel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 10:38:39 by soel-bou          #+#    #+#             */
-/*   Updated: 2024/06/08 17:37:36 by soel-bou         ###   ########.fr       */
+/*   Updated: 2024/06/08 21:29:05 by soel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void	*routine(void *input)
 			semaphore_post(data->meal_lock);
 			semaphore_wait(data->print_lock);
 			printf("%lu %d died\n", (get_time() - philo->sim_start), philo->id);
-			semaphore_post(data->print_lock);
+			//semaphore_post(data->print_lock);
 			exit(1);
 		}
 		semaphore_post(data->meal_lock);
@@ -90,7 +90,7 @@ void	philo_sim(t_philo *philo, t_data *data)
 {
 	
 	if(philo->id % 2 == 0)
-		ft_usleep(philo->time_to_eat);
+		ft_usleep(100);
 	while(1)
 	{
 		semaphore_wait(data->forks);
@@ -123,7 +123,6 @@ void	kill_philos(t_data *data)
 
 void	creat_philos(t_data *data, size_t start)
 {
-	(void)start;
 	int i;
 	t_philo *philos;
 	int exit_status;
@@ -143,7 +142,7 @@ void	creat_philos(t_data *data, size_t start)
 		philos->meals_eaten = 0;
 		philos->data = data;
 		philos->pid = fork();
-		philos->sim_start = get_time();
+		philos->sim_start = start;
 		philos->last_meal_time = philos->sim_start;
 		if (philos->pid == 0)
 		{
