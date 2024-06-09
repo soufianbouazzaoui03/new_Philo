@@ -6,7 +6,7 @@
 /*   By: soel-bou <soel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 10:38:39 by soel-bou          #+#    #+#             */
-/*   Updated: 2024/06/09 22:35:32 by soel-bou         ###   ########.fr       */
+/*   Updated: 2024/06/09 23:22:40 by soel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,12 @@ void eat_sleep_think(t_philo *philo)
     data = philo->data;
     if (philo->meals == -1)
         count = 0;
-
     semaphore_wait(data->print_lock);
     printf("%zu %d is eating\n", get_time() - philo->sim_start, philo->id);
     semaphore_post(data->print_lock);
+
+
+    ft_usleep(philo->time_to_eat);
 
     philo->meals_eaten += count;
     if (philo->meals != -1 && philo->meals_eaten >= philo->meals)
@@ -80,21 +82,21 @@ void eat_sleep_think(t_philo *philo)
         semaphore_post(data->forks);
         exit(2);
     }
-
-    ft_usleep(philo->time_to_eat);
-
     semaphore_wait(data->meal_lock);
     philo->last_meal_time = get_time();
     semaphore_post(data->meal_lock);
 
     semaphore_post(data->forks);
     semaphore_post(data->forks);
-
+	semaphore_wait(data->print_lock);
+	printf("%zu %d is sleeping\n", get_time() - philo->sim_start, philo->id);
+	semaphore_post(data->print_lock);
+    ft_usleep(philo->time_to_sleep);
+	
     semaphore_wait(data->print_lock);
     printf("%zu %d is thinking\n", get_time() - philo->sim_start, philo->id);
     semaphore_post(data->print_lock);
 
-    ft_usleep(philo->time_to_sleep); // Sleep after thinking
 }
 
 void philo_sim(t_philo *philo, t_data *data)
@@ -185,7 +187,7 @@ void	creat_philos(t_data *data, size_t start)
             exit_status = WEXITSTATUS(exit_status);
             if (exit_status == 2)
                 meals++;
-            if (exit_status == 1 || meals == data->meals_num)
+            if (exit_status == 1 || meals == data->philos_num)
             {
                 kill_philos(data);
                 break;
