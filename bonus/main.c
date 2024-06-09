@@ -6,7 +6,7 @@
 /*   By: soel-bou <soel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 10:38:39 by soel-bou          #+#    #+#             */
-/*   Updated: 2024/06/08 21:29:05 by soel-bou         ###   ########.fr       */
+/*   Updated: 2024/06/09 22:35:32 by soel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,53 +59,65 @@ void	*routine(void *input)
 	}
 	return (NULL);
 }
-void	eat_sleep_think(t_philo *philo)
+void eat_sleep_think(t_philo *philo)
 {
-	int count;
-	t_data *data;
+    int count;
+    t_data *data;
 
-	count = 1;
-	data = philo->data;
-	if(philo->meals == -1)
-		count = 0;
-	semaphore_wait(data->print_lock);
-	printf("%zu %d is eating\n", get_time() - philo->sim_start, philo->id);
-	semaphore_post(data->print_lock);
-	philo->meals_eaten += count;
-	if (philo->meals_eaten == philo->meals)
-		exit(2);
-	ft_usleep(philo->time_to_eat);
-	semaphore_wait(data->meal_lock);
-	philo->last_meal_time = get_time();
-	semaphore_post(data->meal_lock);
-	semaphore_post(data->forks);
-	semaphore_post(data->forks);
+    count = 1;
+    data = philo->data;
+    if (philo->meals == -1)
+        count = 0;
 
-	semaphore_wait(data->print_lock);
-	printf("%zu %d is thinking\n", get_time() - philo->sim_start, philo->id);
-	semaphore_post(data->print_lock);
+    semaphore_wait(data->print_lock);
+    printf("%zu %d is eating\n", get_time() - philo->sim_start, philo->id);
+    semaphore_post(data->print_lock);
+
+    philo->meals_eaten += count;
+    if (philo->meals != -1 && philo->meals_eaten >= philo->meals)
+    {
+        semaphore_post(data->forks);
+        semaphore_post(data->forks);
+        exit(2);
+    }
+
+    ft_usleep(philo->time_to_eat);
+
+    semaphore_wait(data->meal_lock);
+    philo->last_meal_time = get_time();
+    semaphore_post(data->meal_lock);
+
+    semaphore_post(data->forks);
+    semaphore_post(data->forks);
+
+    semaphore_wait(data->print_lock);
+    printf("%zu %d is thinking\n", get_time() - philo->sim_start, philo->id);
+    semaphore_post(data->print_lock);
+
+    ft_usleep(philo->time_to_sleep); // Sleep after thinking
 }
 
-void	philo_sim(t_philo *philo, t_data *data)
+void philo_sim(t_philo *philo, t_data *data)
 {
-	
-	if(philo->id % 2 == 0)
-		ft_usleep(100);
-	while(1)
-	{
-		semaphore_wait(data->forks);
-		semaphore_wait(data->print_lock);
-		printf("%zu %d has taken a fork\n",
-			get_time() - philo->sim_start, philo->id);
-		semaphore_post(data->print_lock);
-		semaphore_wait(data->forks);
-		semaphore_wait(data->print_lock);
-		printf("%zu %d has taken a fork\n",
-			get_time() - philo->sim_start, philo->id);
-		semaphore_post(data->print_lock);
-		
-		eat_sleep_think(philo);
-	}
+    if (philo->id % 2 == 0)
+        ft_usleep(philo->time_to_eat / 2); // Stagger the start time to avoid deadlock
+
+    while (1)
+    {
+        semaphore_wait(data->forks);
+
+        semaphore_wait(data->print_lock);
+        printf("%zu %d has taken a fork\n", get_time() - philo->sim_start, philo->id);
+        semaphore_post(data->print_lock);
+
+        semaphore_wait(data->forks);
+
+        semaphore_wait(data->print_lock);
+        printf("%zu %d has taken a fork\n", get_time() - philo->sim_start, philo->id);
+        semaphore_post(data->print_lock);
+
+        eat_sleep_think(philo);
+    }
 }
 
 void	kill_philos(t_data *data)
@@ -115,7 +127,8 @@ void	kill_philos(t_data *data)
 	i = 0;
 	while(i < data->philos_num)
 	{
-		kill(data->philos[i].pid, 2);
+		if(kill(data->philos[i].pid, 2) > 0)
+			perror("kill");
 		i++;
 	}
 	exit(0);
@@ -144,6 +157,11 @@ void	creat_philos(t_data *data, size_t start)
 		philos->pid = fork();
 		philos->sim_start = start;
 		philos->last_meal_time = philos->sim_start;
+		if(philos->pid == -1)
+		{
+			perror("fork");
+			exit(1);
+		}
 		if (philos->pid == 0)
 		{
 			if(pthread_create(&philos->thread_id, NULL, routine, philos) != 0)
@@ -154,15 +172,26 @@ void	creat_philos(t_data *data, size_t start)
 		i++;
 	}
 	i = 0;
-		waitpid(-1, &exit_status, 0);
-	if(WIFEXITED(exit_status))
-	{
-		exit_status = WEXITSTATUS(exit_status);
-		if(exit_status == 2)
-			meals++;
-		if(meals == data->meals_num || exit_status == 1)
-			kill_philos(data);
-	}
+	while (1)
+    {
+        int pid = waitpid(-1, &exit_status, 0);
+        if (pid == -1)
+        {
+            perror("waitpid");
+            break;
+        }
+        if (WIFEXITED(exit_status))
+        {
+            exit_status = WEXITSTATUS(exit_status);
+            if (exit_status == 2)
+                meals++;
+            if (exit_status == 1 || meals == data->meals_num)
+            {
+                kill_philos(data);
+                break;
+            }
+        }
+    }
 }
 
 void	init_semaphores(t_data *data)
