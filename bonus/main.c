@@ -6,7 +6,7 @@
 /*   By: soel-bou <soel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 10:38:39 by soel-bou          #+#    #+#             */
-/*   Updated: 2024/06/09 23:22:40 by soel-bou         ###   ########.fr       */
+/*   Updated: 2024/06/10 15:35:18 by soel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ void eat_sleep_think(t_philo *philo)
         semaphore_post(data->forks);
         exit(2);
     }
+	
     semaphore_wait(data->meal_lock);
     philo->last_meal_time = get_time();
     semaphore_post(data->meal_lock);
