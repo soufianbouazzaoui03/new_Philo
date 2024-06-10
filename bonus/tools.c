@@ -6,7 +6,7 @@
 /*   By: soel-bou <soel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 12:17:38 by soel-bou          #+#    #+#             */
-/*   Updated: 2024/06/06 12:17:47 by soel-bou         ###   ########.fr       */
+/*   Updated: 2024/06/10 15:52:33 by soel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,4 +30,29 @@ void	ft_usleep(size_t time_ms)
 	start = get_time();
 	while (get_time() - start < time_ms)
 		usleep(200);
+}
+
+int	check_args(int argc, char **argv)
+{
+	int	num;
+
+	num = ft_atoi(argv[1]);
+	if (num < 0 || num > 200)
+		return (1);
+	num = ft_atoi(argv[2]);
+	if (num < 60)
+		return (1);
+	num = ft_atoi(argv[3]);
+	if (num < 60)
+		return (1);
+	num = ft_atoi(argv[4]);
+	if (num < 60)
+		return (1);
+	if (argc == 6)
+	{
+		num = ft_atoi(argv[5]);
+		if (num < 0)
+			return (1);
+	}
+	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: soel-bou <soel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/05 15:06:29 by soel-bou          #+#    #+#             */
-/*   Updated: 2024/06/05 15:11:48 by soel-bou         ###   ########.fr       */
+/*   Updated: 2024/06/10 19:55:24 by soel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,4 +24,12 @@ void semaphore_post(sem_t *sem)
     int n = sem_post(sem);
     if (n != 0) 
         exit(1);
+}
+
+void    unlink_sim(void)
+{
+    sem_unlink("forks");
+	sem_unlink("print_lock");
+	sem_unlink("alive_lock");
+	sem_unlink("meal_lock");
 }
