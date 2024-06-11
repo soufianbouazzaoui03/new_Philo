@@ -6,7 +6,7 @@
 /*   By: soel-bou <soel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 09:07:08 by soel-bou          #+#    #+#             */
-/*   Updated: 2024/06/04 09:47:58 by soel-bou         ###   ########.fr       */
+/*   Updated: 2024/06/11 17:47:58 by soel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@ int	check_meals(t_philo *philos, int num, int meals, t_data *data)
 	int	i;
 
 	i = 0;
-	if (philos->philos_num == 1)
-		return (0);
 	while (i < num)
 	{
 		if (pthread_mutex_lock(&data->ready))
