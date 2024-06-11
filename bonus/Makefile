@@ -3,7 +3,7 @@ CFLAGS = -Wall -Wextra -Werror   #-g -pthread -fsanitize=thread #-g -fsanitize=a
 NAME = philo_bonus
 SRC = main.c semaphores.c tools.c ft_atoi.c data.c
 OBJ = $(SRC:.c=.o)
-HEADER = 
+HEADER = philo_bonus.h
 
 all: $(NAME)
 

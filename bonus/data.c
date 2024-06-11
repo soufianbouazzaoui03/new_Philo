@@ -6,21 +6,51 @@
 /*   By: soel-bou <soel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 15:53:10 by soel-bou          #+#    #+#             */
-/*   Updated: 2024/06/10 16:24:29 by soel-bou         ###   ########.fr       */
+/*   Updated: 2024/06/11 16:31:27 by soel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo_bonus.h"
 
+void	get_exit_status(t_data *data)
+{
+	int	exit_status;
+	int	meals;
+
+	meals = 0;
+	while (1)
+	{
+		waitpid(-1, &exit_status, 0);
+		if (WIFEXITED(exit_status))
+		{
+			exit_status = WEXITSTATUS(exit_status);
+			if (exit_status == 2)
+				meals++;
+			if (exit_status == 1 || meals == data->philos_num)
+				kill_philos(data);
+		}
+	}
+}
+
+void	creat_child(t_philo *philos, t_data *data)
+{
+	if (philos->pid == -1)
+		exit(1);
+	if (philos->pid == 0)
+	{
+		if (pthread_create(&philos->thread_id, NULL, routine, philos) != 0)
+			exit(1);
+		philo_sim(philos, data);
+		pthread_join(philos->thread_id, NULL);
+	}
+}
+
 void	creat_philos(t_data *data, size_t start)
 {
 	int		i;
 	t_philo	*philos;
-	int		exit_status;
-	int		meals;
 
 	i = 0;
-	meals = 0;
 	philos = data->philos;
 	while (i < data->philos_num)
 	{
@@ -35,30 +65,10 @@ void	creat_philos(t_data *data, size_t start)
 		philos->pid = fork();
 		philos->sim_start = start;
 		philos->last_meal_time = philos->sim_start;
-		if(philos->pid == -1)
-			exit(1);
-		if (philos->pid == 0)
-		{
-			if(pthread_create(&philos->thread_id, NULL, routine, philos) != 0)
-				exit(1);
-			philo_sim(philos, data);
-			pthread_join(philos->thread_id, NULL);
-		}
+		creat_child(philos, data);
 		i++;
 	}
-	i = 0;
-	while (1)
-	{
-		waitpid(-1, &exit_status, 0);
-		if (WIFEXITED(exit_status))
-		{
-			exit_status = WEXITSTATUS(exit_status);
-			if (exit_status == 2)
-				meals++;
-			if (exit_status == 1 || meals == data->philos_num)
-				kill_philos(data);
-		}
-	}
+	get_exit_status(data);
 }
 
 void	init_semaphores(t_data *data)

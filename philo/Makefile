@@ -1,9 +1,9 @@
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g  -fsanitize=address #-pthread -fsanitize=thread 
+CFLAGS = -Wall -Wextra -Werror #-g  -fsanitize=address #-pthread -fsanitize=thread 
 NAME = philo
 SRC = main.c ft_atoi.c philo_tools.c monitor.c data.c
 OBJ = $(SRC:.c=.o)
-HEADER = 
+HEADER = philo.h
 
 all: $(NAME)
 
