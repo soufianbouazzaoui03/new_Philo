@@ -6,7 +6,7 @@
 /*   By: soel-bou <soel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 12:17:38 by soel-bou          #+#    #+#             */
-/*   Updated: 2024/06/11 16:39:52 by soel-bou         ###   ########.fr       */
+/*   Updated: 2024/06/11 21:08:41 by soel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int	check_args(int argc, char **argv)
 	if (argc == 6)
 	{
 		num = ft_atoi(argv[5]);
-		if (num < 0)
+		if (num <= 0)
 			return (1);
 	}
 	return (0);
@@ -68,5 +68,11 @@ void	kill_philos(t_data *data)
 		kill(data->philos[i].pid, SIGINT);
 		i++;
 	}
-	exit(0);
+	exit_close();
+}
+
+void	exit_close(void)
+{
+	unlink_sim();
+	exit(1);
 }

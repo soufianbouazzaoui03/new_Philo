@@ -6,7 +6,7 @@
 /*   By: soel-bou <soel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/10 15:53:10 by soel-bou          #+#    #+#             */
-/*   Updated: 2024/06/11 16:31:27 by soel-bou         ###   ########.fr       */
+/*   Updated: 2024/06/11 21:09:39 by soel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,14 @@ void	get_exit_status(t_data *data)
 void	creat_child(t_philo *philos, t_data *data)
 {
 	if (philos->pid == -1)
-		exit(1);
+		exit_close();
 	if (philos->pid == 0)
 	{
 		if (pthread_create(&philos->thread_id, NULL, routine, philos) != 0)
-			exit(1);
+			exit_close();
 		philo_sim(philos, data);
-		pthread_join(philos->thread_id, NULL);
+		if (pthread_join(philos->thread_id, NULL) != 0)
+			exit_close();
 	}
 }
 
@@ -62,9 +63,9 @@ void	creat_philos(t_data *data, size_t start)
 		philos->meals = data->meals_num;
 		philos->meals_eaten = 0;
 		philos->data = data;
-		philos->pid = fork();
 		philos->sim_start = start;
 		philos->last_meal_time = philos->sim_start;
+		philos->pid = fork();
 		creat_child(philos, data);
 		i++;
 	}
@@ -79,16 +80,16 @@ void	init_semaphores(t_data *data)
 	sem_unlink("meal_lock");
 	data->forks = sem_open("forks", O_CREAT | O_EXCL, 0644, data->philos_num);
 	if (data->forks == SEM_FAILED)
-		exit(1);
+		exit_close();
 	data->print_lock = sem_open("print_lock", O_CREAT | O_EXCL, 0644, 1);
 	if (data->print_lock == SEM_FAILED)
-		exit(1);
+		exit_close();
 	data->alive_lock = sem_open("alive_lock", O_CREAT | O_EXCL, 0644, 1);
 	if (data->alive_lock == SEM_FAILED)
-		exit(1);
+		exit_close();
 	data->meal_lock = sem_open("meal_lock", O_CREAT | O_EXCL, 0644, 1);
 	if (data->meal_lock == SEM_FAILED)
-		exit(1);
+		exit_close();
 }
 
 void	init_data(int argc, char **argv, t_data *data)

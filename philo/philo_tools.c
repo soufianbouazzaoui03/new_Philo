@@ -6,7 +6,7 @@
 /*   By: soel-bou <soel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 04:52:09 by soel-bou          #+#    #+#             */
-/*   Updated: 2024/06/04 11:44:32 by soel-bou         ###   ########.fr       */
+/*   Updated: 2024/06/11 19:22:04 by soel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int	check_args(int argc, char **argv)
 	if (argc == 6)
 	{
 		num = ft_atoi(argv[5]);
-		if (num < 0)
+		if (num <= 0)
 			return (1);
 	}
 	return (0);
