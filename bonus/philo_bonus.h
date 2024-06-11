@@ -6,7 +6,7 @@
 /*   By: soel-bou <soel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 10:38:51 by soel-bou          #+#    #+#             */
-/*   Updated: 2024/06/11 16:42:08 by soel-bou         ###   ########.fr       */
+/*   Updated: 2024/06/11 17:02:17 by soel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,13 +45,13 @@ typedef struct s_data
 	size_t	time_to_die;
 	size_t	time_to_eat;
 	size_t	time_to_sleep;
-	int		hilos_num;
+	int		philos_num;
 	int		meals_num;
-	t_philo	philos[201];
-	sem_t	forks;
-	sem_t	print_lock;
-	sem_t	alive_lock;
-	sem_t	meal_lock;
+	t_philo philos[201];
+	sem_t	*forks;
+	sem_t	*print_lock;
+	sem_t	*alive_lock;
+	sem_t	*meal_lock;
 }	t_data;
 
 size_t	get_time(void);
