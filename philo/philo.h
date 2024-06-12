@@ -6,7 +6,7 @@
 /*   By: soel-bou <soel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 09:52:32 by soel-bou          #+#    #+#             */
-/*   Updated: 2024/06/11 17:48:19 by soel-bou         ###   ########.fr       */
+/*   Updated: 2024/06/12 19:58:28 by soel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,10 +77,12 @@ void	destroy_mtx(t_data *data);
 int		check_meals(t_philo *philos, int num, int meals, t_data *data);
 void	ft_died(t_data *data, t_philo *philo);
 void	*monitoring(void *input);
-void	creat_mtr_join(t_data *data, t_monitor *monitor, t_philo *philo);
+int		creat_mtr_join(t_data *data, t_monitor *monitor, t_philo *philo);
 void	creat_philos(t_data *data, t_monitor *monitor, size_t start);
 int		data_alloc(t_data *data, int argc, char **argv);
 void	init_data(t_data *data, int argc, char **argv);
 void	*philo_routine(void *input);
+int		lock_fork(t_data *data, t_philo *philo, pthread_mutex_t	*forks);
+void	init_err(t_data *data);
 
 #endif

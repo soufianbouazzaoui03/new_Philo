@@ -6,7 +6,7 @@
 /*   By: soel-bou <soel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 03:50:54 by soel-bou          #+#    #+#             */
-/*   Updated: 2024/06/11 21:08:10 by soel-bou         ###   ########.fr       */
+/*   Updated: 2024/06/12 19:59:14 by soel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,16 @@ int	ft_atoi(const char *str)
 	if (str[i] && (str[i] < '0' || str[i] > '9'))
 		return (-1);
 	return (res * sign);
+}
+
+void	init_err(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	data->err[0] = 1;
+	data->err[1] = 1;
+	data->err[2] = 1;
+	while (i < data->philos_num)
+		data->forks_err[i++] = 1;
 }

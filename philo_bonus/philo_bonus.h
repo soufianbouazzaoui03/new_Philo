@@ -6,7 +6,7 @@
 /*   By: soel-bou <soel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 10:38:51 by soel-bou          #+#    #+#             */
-/*   Updated: 2024/06/11 21:09:24 by soel-bou         ###   ########.fr       */
+/*   Updated: 2024/06/12 16:48:43 by soel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,8 @@ typedef struct s_data
 
 size_t	get_time(void);
 void	ft_usleep(size_t time_ms);
-void	semaphore_post(sem_t *sem);
-void	semaphore_wait(sem_t *sem);
+void	semaphore_post(sem_t *sem, t_data *data);
+void	semaphore_wait(sem_t *sem, t_data *data);
 int		ft_atoi(const char *str);
 int		check_args(int argc, char **argv);
 void	init_data(int argc, char **argv, t_data *data);
@@ -65,7 +65,7 @@ void	*routine(void *input);
 void	eat_sleep_think(t_philo *philo);
 void	philo_sim(t_philo *philo, t_data *data);
 void	kill_philos(t_data *data);
-void	unlink_sim(void);
-void	exit_close(void);
+void	unlink_sim(t_data *data);
+void	exit_close(t_data *data);
 
 #endif

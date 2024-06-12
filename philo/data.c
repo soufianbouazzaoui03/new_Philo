@@ -6,28 +6,29 @@
 /*   By: soel-bou <soel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 09:24:01 by soel-bou          #+#    #+#             */
-/*   Updated: 2024/06/04 09:36:51 by soel-bou         ###   ########.fr       */
+/*   Updated: 2024/06/12 19:50:31 by soel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	creat_mtr_join(t_data *data, t_monitor *monitor, t_philo *philo)
+int	creat_mtr_join(t_data *data, t_monitor *monitor, t_philo *philo)
 {
 	int	i;
 
 	i = 0;
 	if (pthread_create(&monitor->thread_id, NULL, &monitoring, monitor) != 0)
-		return ;
+		return (1);
 	while (i < data->philos_num)
 	{
 		philo = data->philos + i;
 		if (pthread_detach(philo->thread_id))
-			return ;
+			return (1);
 		i++;
 	}
 	if (pthread_join(monitor->thread_id, NULL))
-		return ;
+		return (1);
+	return (0);
 }
 
 void	creat_philos(t_data *data, t_monitor *monitor, size_t start)
@@ -36,6 +37,7 @@ void	creat_philos(t_data *data, t_monitor *monitor, size_t start)
 	t_philo	*philo;
 
 	i = 0;
+	philo = NULL;
 	while (i < data->philos_num)
 	{
 		philo = data->philos + i;
@@ -47,20 +49,18 @@ void	creat_philos(t_data *data, t_monitor *monitor, size_t start)
 		philo->philos_num = data->philos_num;
 		philo->meals = data->meals_num;
 		philo->meals_eaten = 0;
-		pthread_mutex_lock(&data->read);
 		philo->sim_start = start;
-		pthread_mutex_unlock(&data->read);
 		philo->last_meal_time = philo->sim_start;
 		if (pthread_create(&philo->thread_id, NULL, &philo_routine, philo) != 0)
 			return ;
 		i++;
 	}
-	creat_mtr_join(data, monitor, philo);
+	if (creat_mtr_join(data, monitor, philo))
+		return ;
 }
 
 int	data_alloc(t_data *data, int argc, char **argv)
 {
-	data->all_philos_ready = false;
 	data->philos_num = ft_atoi(argv[1]);
 	data->time_to_die = ft_atoi(argv[2]);
 	data->time_to_eat = ft_atoi(argv[3]);
@@ -78,6 +78,28 @@ int	data_alloc(t_data *data, int argc, char **argv)
 	return (0);
 }
 
+int	check_mtx(t_data *data)
+{
+	int	i;
+
+	i = -1;
+	if (data->err[0] != 0)
+		return (1);
+	if (data->err[1] != 0)
+		return (1);
+	if (data->err[2] != 0)
+		return (1);
+	if (data->forks)
+	{
+		while (++i < data->philos_num)
+		{
+			if (data->forks_err[i] != 0)
+				return (1);
+		}
+	}
+	return (0);
+}
+
 void	init_data(t_data *data, int argc, char **argv)
 {
 	t_monitor	*monitor;
@@ -90,11 +112,13 @@ void	init_data(t_data *data, int argc, char **argv)
 	if (!monitor)
 		return ;
 	data->monitor = monitor;
+	monitor->data = data;
 	while (++i < data->philos_num)
 		data->forks_err[i] = pthread_mutex_init(&data->forks[i], NULL);
-	monitor->data = data;
 	data->err[0] = pthread_mutex_init(&data->write, NULL);
 	data->err[1] = pthread_mutex_init(&data->read, NULL);
 	data->err[2] = pthread_mutex_init(&data->ready, NULL);
+	if (check_mtx(data))
+		return ;
 	creat_philos(data, monitor, get_time());
 }

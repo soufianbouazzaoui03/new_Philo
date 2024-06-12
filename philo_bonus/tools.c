@@ -6,7 +6,7 @@
 /*   By: soel-bou <soel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/06 12:17:38 by soel-bou          #+#    #+#             */
-/*   Updated: 2024/06/11 21:08:41 by soel-bou         ###   ########.fr       */
+/*   Updated: 2024/06/12 16:58:23 by soel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,17 +62,17 @@ void	kill_philos(t_data *data)
 	int	i;
 
 	i = 0;
-	unlink_sim();
+	unlink_sim(data);
 	while (i < data->philos_num)
 	{
 		kill(data->philos[i].pid, SIGINT);
 		i++;
 	}
-	exit_close();
+	exit_close(data);
 }
 
-void	exit_close(void)
+void	exit_close(t_data *data)
 {
-	unlink_sim();
-	exit(1);
+	unlink_sim(data);
+	exit(0);
 }

@@ -6,7 +6,7 @@
 /*   By: soel-bou <soel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/04 09:07:08 by soel-bou          #+#    #+#             */
-/*   Updated: 2024/06/11 17:47:58 by soel-bou         ###   ########.fr       */
+/*   Updated: 2024/06/12 19:45:10 by soel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void	*monitoring(void *input)
 
 	(1) && (i = 0, monitor = (t_monitor *)input, data = monitor->data,
 		data->lock_error = 0, philos = data->philos);
-	while (!data->death)
+	while (1 && data && philos)
 	{
 		if (i == data->philos_num)
 			i = 0;
@@ -66,7 +66,7 @@ void	*monitoring(void *input)
 				data->meals_num, data) || data->lock_error)
 			return (NULL);
 		if (left > philos[i].time_to_die)
-			ft_died(data, &philos[i]);
+			return (ft_died(data, &philos[i]), NULL);
 		i++;
 	}
 	return (NULL);

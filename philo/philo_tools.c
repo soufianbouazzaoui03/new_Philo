@@ -6,7 +6,7 @@
 /*   By: soel-bou <soel-bou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 04:52:09 by soel-bou          #+#    #+#             */
-/*   Updated: 2024/06/11 19:22:04 by soel-bou         ###   ########.fr       */
+/*   Updated: 2024/06/12 19:06:46 by soel-bou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,4 +76,17 @@ void	destroy_mtx(t_data *data)
 				pthread_mutex_destroy(&data->forks[i]);
 		}
 	}
+}
+
+int	lock_fork(t_data *data, t_philo *philo, pthread_mutex_t	*forks)
+{
+	if (pthread_mutex_lock(forks) != 0)
+		return (1);
+	if (pthread_mutex_lock(&data->write) != 0)
+		return (1);
+	printf("%zu %d has taken a fork\n",
+		get_time() - philo->sim_start, philo->id);
+	if (pthread_mutex_unlock(&data->write) != 0)
+		return (1);
+	return (0);
 }
